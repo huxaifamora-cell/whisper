@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Whisper — Price Alerts</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="assets/logo.jpg" alt="Whisper" class="brand-mark" />
+    <span class="brand-name">WHISPER</span>
+  </div>
+  <div id="accountBox" class="account-box hidden">
+    <span id="pairingCodeLabel"></span>
+    <button id="logoutBtn" class="btn-ghost">Sign out</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- AUTH VIEW -->
+  <section id="authView" class="panel auth-panel">
+    <h1>Hear it the moment it matters.</h1>
+    <p class="sub">Set a price target, walk away from the chart. Whisper watches Deriv's feed and taps you on the shoulder — on Telegram and on your phone — the instant it's hit.</p>
+
+    <div class="auth-tabs">
+      <button class="tab active" data-tab="login">Sign in</button>
+      <button class="tab" data-tab="register">Create account</button>
+    </div>
+
+    <form id="loginForm" class="auth-form">
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="password" placeholder="Password" required />
+      <button type="submit" class="btn-primary">Sign in</button>
+    </form>
+
+    <form id="registerForm" class="auth-form hidden">
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="password" placeholder="Password (6+ characters)" required minlength="6" />
+      <button type="submit" class="btn-primary">Create account</button>
+    </form>
+
+    <p id="authError" class="error hidden"></p>
+  </section>
+
+  <!-- APP VIEW -->
+  <section id="appView" class="hidden">
+
+    <div class="panel pairing-panel">
+      <h2>Link Telegram &amp; the Android app</h2>
+      <p class="sub">Your pairing code — send <code>/link <span id="pairingInline"></span></code> to the Whisper Telegram bot, and enter it once in the Android app's setup screen.</p>
+      <div class="code-chip" id="pairingCode">——</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>New alert</h2>
+      </div>
+      <form id="ruleForm" class="rule-form">
+        <input type="text" name="symbol" placeholder="Symbol e.g. R_75" required />
+        <input type="text" name="timeframe" placeholder="Timeframe e.g. M15" required />
+        <input type="number" step="any" name="target_price" placeholder="Target price" required />
+        <select name="direction" required>
+          <option value="buy">Buy (price crosses up)</option>
+          <option value="sell">Sell (price crosses down)</option>
+        </select>
+        <select name="sound">
+          <option value="default">Default sound</option>
+          <option value="urgent">Urgent sound</option>
+          <option value="chime">Chime</option>
+        </select>
+        <button type="submit" class="btn-primary">Create alert</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Your alerts</h2>
+        <button id="refreshBtn" class="btn-ghost">Refresh</button>
+      </div>
+      <table class="rule-table">
+        <thead>
+          <tr><th>Symbol</th><th>Timeframe</th><th>Target</th><th>Direction</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody id="rulesBody"></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Recent alert history</h2></div>
+      <table class="rule-table">
+        <thead><tr><th>Symbol</th><th>Price</th><th>Direction</th><th>Sent via</th><th>When</th></tr></thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
