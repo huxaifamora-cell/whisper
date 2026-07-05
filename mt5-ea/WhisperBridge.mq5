@@ -9,9 +9,9 @@
 //|  1. Attach this EA to ANY chart in MT5 (it doesn't matter which  |
 //|     - it monitors the symbol list below regardless of which      |
 //|     chart it's sitting on).                                      |
-//|  2. Edit the SymbolMap input if your broker names any symbol     |
-//|     differently (defaults already cover all 17 volatility        |
-//|     symbols - standard, 1s, and the MT5-only 150/250 variants).  |
+//|  2. The symbol list is hardcoded below (mt5Names/whisperCodes)   |
+//|     using your broker's confirmed exact names - edit those       |
+//|     arrays directly if your broker ever renames something.       |
 //|  3. Set ServerUrl to your Render backend + /ticks/mt5             |
 //|  4. Set ApiSecret to match MT5_BRIDGE_SECRET in Render.           |
 //|  5. Tools -> Options -> Expert Advisors -> tick "Allow WebRequest |
@@ -19,8 +19,8 @@
 //|  6. Enable AutoTrading (top toolbar) - the EA won't send          |
 //|     anything otherwise.                                          |
 //|                                                                    |
-//|  That's it - this single EA now covers every symbol listed in    |
-//|  SymbolMap, forever, without opening their charts.                |
+//|  That's it - this single EA now covers all 20 volatility         |
+//|  symbols, forever, without opening their charts.                  |
 //+------------------------------------------------------------------+
 #property copyright "Whisper"
 #property version   "2.00"
@@ -33,39 +33,40 @@
 // backend/src/constants/symbols.js. This covers every volatility symbol,
 // not just the ones missing from Deriv's WS API - one EA, one feed, no need
 // to think about which source covers which symbol.
-input string SymbolMap =
-   "Volatility 10 Index:R_10,"
-   "Volatility 25 Index:R_25,"
-   "Volatility 50 Index:R_50,"
-   "Volatility 75 Index:R_75,"
-   "Volatility 100 Index:R_100,"
-   "Volatility 10 (1s) Index:1HZ10V,"
-   "Volatility 15 (1s) Index:1HZ15V,"
-   "Volatility 25 (1s) Index:1HZ25V,"
-   "Volatility 30 (1s) Index:1HZ30V,"
-   "Volatility 50 (1s) Index:1HZ50V,"
-   "Volatility 75 (1s) Index:1HZ75V,"
-   "Volatility 90 (1s) Index:1HZ90V,"
-   "Volatility 100 (1s) Index:1HZ100V,"
-   "Volatility 5 Index:MT5_VOL5,"
-   "Volatility 15 Index:MT5_VOL15,"
-   "Volatility 30 Index:MT5_VOL30,"
-   "Volatility 90 Index:MT5_VOL90,"
-   "Volatility 5 (1s) Index:MT5_VOL5_1S,"
-   "Volatility 150 (1s) Index:MT5_VOL150_1S,"
-   "Volatility 250 (1s) Index:MT5_VOL250_1S";
+//
+// NOTE: this is hardcoded (not an "input") deliberately - MQL5 silently
+// truncates long input-string defaults around ~255 characters, which broke
+// this when it was a single input string. Plain arrays have no such limit.
+// To change a name, just edit the array below and recompile.
+string mt5Names[] = {
+   "Volatility 10 Index", "Volatility 25 Index", "Volatility 50 Index",
+   "Volatility 75 Index", "Volatility 100 Index",
+   "Volatility 10 (1s) Index", "Volatility 15 (1s) Index", "Volatility 25 (1s) Index",
+   "Volatility 30 (1s) Index", "Volatility 50 (1s) Index", "Volatility 75 (1s) Index",
+   "Volatility 90 (1s) Index", "Volatility 100 (1s) Index",
+   "Volatility 5 Index", "Volatility 15 Index", "Volatility 30 Index", "Volatility 90 Index",
+   "Volatility 5 (1s) Index", "Volatility 150 (1s) Index", "Volatility 250 (1s) Index"
+};
+string whisperCodes[] = {
+   "R_10", "R_25", "R_50",
+   "R_75", "R_100",
+   "1HZ10V", "1HZ15V", "1HZ25V",
+   "1HZ30V", "1HZ50V", "1HZ75V",
+   "1HZ90V", "1HZ100V",
+   "MT5_VOL5", "MT5_VOL15", "MT5_VOL30", "MT5_VOL90",
+   "MT5_VOL5_1S", "MT5_VOL150_1S", "MT5_VOL250_1S"
+};
 
 input string ServerUrl         = "https://whisper-backend.onrender.com/ticks/mt5";
 input string ApiSecret         = "PASTE_YOUR_MT5_BRIDGE_SECRET_HERE";
 input int    CheckIntervalMs   = 1000;   // how often to check all symbols for a price change
 
-string mt5Names[];
-string whisperCodes[];
 double lastSentPrice[];
 
 int OnInit()
   {
-   ParseSymbolMap();
+   ArrayResize(lastSentPrice, ArraySize(mt5Names));
+   ArrayInitialize(lastSentPrice, 0);
 
    for(int i = 0; i < ArraySize(mt5Names); i++)
      {
@@ -125,33 +126,4 @@ void SendPrice(string whisperCode, double price)
      }
   }
 
-// Splits the SymbolMap input into parallel mt5Names[] / whisperCodes[] arrays.
-void ParseSymbolMap()
-  {
-   string pairs[];
-   int pairCount = StringSplit(SymbolMap, ',', pairs);
-
-   ArrayResize(mt5Names, pairCount);
-   ArrayResize(whisperCodes, pairCount);
-   ArrayResize(lastSentPrice, pairCount);
-
-   for(int i = 0; i < pairCount; i++)
-     {
-      string parts[];
-      int n = StringSplit(pairs[i], ':', parts);
-      if(n == 2)
-        {
-         mt5Names[i]   = TrimStr(parts[0]);
-         whisperCodes[i] = TrimStr(parts[1]);
-        }
-      lastSentPrice[i] = 0;
-     }
-  }
-
-string TrimStr(string s)
-  {
-   StringTrimLeft(s);
-   StringTrimRight(s);
-   return s;
-  }
 //+------------------------------------------------------------------+

@@ -12,6 +12,12 @@ const { isValidSymbol } = require('../constants/symbols');
 
 const router = express.Router();
 
+// Logging every single tick would flood Render's logs (20 symbols x up to
+// once/second each). Instead, log at most once per symbol per 30 seconds -
+// enough to confirm the bridge is alive without drowning everything else out.
+const lastLoggedAt = {};
+const LOG_INTERVAL_MS = 30000;
+
 router.post('/', async (req, res) => {
   const secret = req.headers['x-whisper-secret'];
   if (!process.env.MT5_BRIDGE_SECRET || secret !== process.env.MT5_BRIDGE_SECRET) {
@@ -26,7 +32,14 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: `Unknown symbol "${symbol}". Add it to constants/symbols.js first.` });
   }
 
-  await evaluateTick(symbol.toUpperCase(), Number(price));
+  const upperSymbol = symbol.toUpperCase();
+  const now = Date.now();
+  if (!lastLoggedAt[upperSymbol] || now - lastLoggedAt[upperSymbol] > LOG_INTERVAL_MS) {
+    lastLoggedAt[upperSymbol] = now;
+    console.log(`[mt5-bridge] ${upperSymbol} @ ${price}`);
+  }
+
+  await evaluateTick(upperSymbol, Number(price));
   res.json({ ok: true });
 });
 
