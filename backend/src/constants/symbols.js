@@ -51,5 +51,5 @@ function labelForSymbol(symbol) {
   return SYMBOL_LABELS[String(symbol).toUpperCase()] || symbol;
 }
 
-module.exports = { VALID_SYMBOLS, SYMBOL_LABELS, isValidSymbol, labelForSymbol };
+module.exports = { VALID_SYMBOLS, SYMBOL_LABELS, MT5_BRIDGE_ONLY, isValidSymbol, labelForSymbol };
 
