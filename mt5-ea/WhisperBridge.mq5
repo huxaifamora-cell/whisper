@@ -39,7 +39,6 @@ input string SymbolMap =
    "Volatility 50 Index:R_50,"
    "Volatility 75 Index:R_75,"
    "Volatility 100 Index:R_100,"
-   "Volatility 5 (1s) Index:1HZ5V,"
    "Volatility 10 (1s) Index:1HZ10V,"
    "Volatility 15 (1s) Index:1HZ15V,"
    "Volatility 25 (1s) Index:1HZ25V,"
@@ -48,9 +47,12 @@ input string SymbolMap =
    "Volatility 75 (1s) Index:1HZ75V,"
    "Volatility 90 (1s) Index:1HZ90V,"
    "Volatility 100 (1s) Index:1HZ100V,"
-   "Volatility 150 Index:MT5_VOL150,"
+   "Volatility 5 Index:MT5_VOL5,"
+   "Volatility 15 Index:MT5_VOL15,"
+   "Volatility 30 Index:MT5_VOL30,"
+   "Volatility 90 Index:MT5_VOL90,"
+   "Volatility 5 (1s) Index:MT5_VOL5_1S,"
    "Volatility 150 (1s) Index:MT5_VOL150_1S,"
-   "Volatility 250 Index:MT5_VOL250,"
    "Volatility 250 (1s) Index:MT5_VOL250_1S";
 
 input string ServerUrl         = "https://whisper-backend.onrender.com/ticks/mt5";
