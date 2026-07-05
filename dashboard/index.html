@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Whisper — Price Alerts</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="assets/logo.jpg" alt="Whisper" class="brand-mark" />
+    <span class="brand-name">WHISPER</span>
+  </div>
+  <div id="accountBox" class="account-box hidden">
+    <span id="pairingCodeLabel"></span>
+    <button id="logoutBtn" class="btn-ghost">Sign out</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- AUTH VIEW -->
+  <section id="authView" class="panel auth-panel">
+    <h1>Hear it the moment it matters.</h1>
+    <p class="sub">Set a price target, walk away from the chart. Whisper watches Deriv's feed and taps you on the shoulder — on Telegram and on your phone — the instant it's hit.</p>
+
+    <div class="auth-tabs">
+      <button class="tab active" data-tab="login">Sign in</button>
+      <button class="tab" data-tab="register">Create account</button>
+    </div>
+
+    <form id="loginForm" class="auth-form">
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="password" placeholder="Password" required />
+      <button type="submit" class="btn-primary">Sign in</button>
+    </form>
+
+    <form id="registerForm" class="auth-form hidden">
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="password" placeholder="Password (6+ characters)" required minlength="6" />
+      <button type="submit" class="btn-primary">Create account</button>
+    </form>
+
+    <p id="authError" class="error hidden"></p>
+  </section>
+
+  <!-- APP VIEW -->
+  <section id="appView" class="hidden">
+
+    <div class="panel pairing-panel">
+      <h2>Link Telegram &amp; the Android app</h2>
+      <p class="sub">Your pairing code — send <code>/link <span id="pairingInline"></span></code> to the Whisper Telegram bot, and enter it once in the Android app's setup screen.</p>
+      <div class="code-chip" id="pairingCode">——</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>New alert</h2>
+      </div>
+      <form id="ruleForm" class="rule-form">
+        <select name="symbol" required>
+          <option value="" disabled selected>Select symbol…</option>
+          <optgroup label="Standard (2s tick)">
+            <option value="R_10">Volatility 10 Index</option>
+            <option value="R_25">Volatility 25 Index</option>
+            <option value="R_50">Volatility 50 Index</option>
+            <option value="R_75">Volatility 75 Index</option>
+            <option value="R_100">Volatility 100 Index</option>
+          </optgroup>
+          <optgroup label="1-second tick">
+            <option value="1HZ10V">Volatility 10 (1s) Index</option>
+            <option value="1HZ15V">Volatility 15 (1s) Index</option>
+            <option value="1HZ25V">Volatility 25 (1s) Index</option>
+            <option value="1HZ30V">Volatility 30 (1s) Index</option>
+            <option value="1HZ50V">Volatility 50 (1s) Index</option>
+            <option value="1HZ75V">Volatility 75 (1s) Index</option>
+            <option value="1HZ90V">Volatility 90 (1s) Index</option>
+            <option value="1HZ100V">Volatility 100 (1s) Index</option>
+          </optgroup>
+          <optgroup label="Alternate labels (same underlying instruments)">
+            <option value="1HZ15V">Volatility 15 Index</option>
+            <option value="1HZ30V">Volatility 30 Index</option>
+            <option value="1HZ90V">Volatility 90 Index</option>
+            <option value="1HZ10V">High Frequency Vol 10 Index</option>
+            <option value="1HZ25V">High Frequency Vol 25 Index</option>
+            <option value="1HZ50V">High Frequency Vol 50 Index</option>
+            <option value="1HZ75V">High Frequency Vol 75 Index</option>
+            <option value="1HZ100V">High Frequency Vol 100 Index</option>
+          </optgroup>
+          <optgroup label="Requires MT5 bridge (EA must be running)">
+            <option value="MT5_VOL150">Volatility 150 Index</option>
+            <option value="MT5_VOL150_1S">Volatility 150 (1s) Index</option>
+            <option value="MT5_VOL250">Volatility 250 Index</option>
+            <option value="MT5_VOL250_1S">Volatility 250 (1s) Index</option>
+          </optgroup>
+        </select>
+        <select name="timeframe" required>
+          <option value="" disabled selected>Select timeframe…</option>
+          <option value="M1">M1</option>
+          <option value="M5">M5</option>
+          <option value="M10">M10</option>
+          <option value="M15">M15</option>
+          <option value="M30">M30</option>
+          <option value="H1">H1</option>
+          <option value="H2">H2</option>
+          <option value="H4">H4</option>
+          <option value="H6">H6</option>
+          <option value="H12">H12</option>
+          <option value="D1">D1</option>
+          <option value="W1">W1</option>
+          <option value="MN1">MN1</option>
+        </select>
+        <input type="number" step="any" name="target_price" placeholder="Target price" required />
+        <select name="direction" required>
+          <option value="buy">Buy (price crosses up)</option>
+          <option value="sell">Sell (price crosses down)</option>
+        </select>
+        <select name="sound">
+          <option value="default">Default sound</option>
+          <option value="urgent">Urgent sound</option>
+          <option value="chime">Chime</option>
+        </select>
+        <button type="submit" class="btn-primary">Create alert</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Your alerts</h2>
+        <button id="refreshBtn" class="btn-ghost">Refresh</button>
+      </div>
+      <table class="rule-table">
+        <thead>
+          <tr><th>Symbol</th><th>Timeframe</th><th>Target</th><th>Direction</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody id="rulesBody"></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h2>Recent alert history</h2></div>
+      <table class="rule-table">
+        <thead><tr><th>Symbol</th><th>Price</th><th>Direction</th><th>Sent via</th><th>When</th></tr></thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: whisper-backend
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DERIV_APP_ID
+        value: 1089
+      - key: DERIV_WS_URL
+        value: wss://ws.derivws.com/websockets/v3
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_USE_WEBHOOK
+        value: "true"
+      - key: TELEGRAM_WEBHOOK_URL
+        value: https://whisper-backend.onrender.com/telegram/webhook
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: MT5_BRIDGE_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: whisper-db
+          property: connectionString
+
+databases:
+  - name: whisper-db
+    plan: free
