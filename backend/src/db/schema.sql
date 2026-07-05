@@ -4,8 +4,10 @@ CREATE TABLE IF NOT EXISTS users (
   id            SERIAL PRIMARY KEY,
   email         TEXT UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
-  pairing_code  TEXT UNIQUE NOT NULL,      -- used to link Telegram + Android app to this account
-  telegram_chat_id TEXT,                   -- filled in once user links via /link <code> on the bot
+  pairing_code  TEXT UNIQUE NOT NULL,      -- legacy, unused by current linking flow
+  telegram_chat_id TEXT,                   -- filled in once user links via the one-time Telegram link
+  link_token    TEXT UNIQUE,               -- one-time token for the "Open Telegram" button, null once used/expired
+  link_token_expires_at TIMESTAMPTZ,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -45,3 +47,8 @@ CREATE TABLE IF NOT EXISTS alert_history (
 );
 
 CREATE INDEX IF NOT EXISTS idx_rules_symbol_status ON rules(symbol, status);
+
+-- Safe to re-run: adds the new linking-token columns to a database that
+-- already existed before this feature, without affecting existing data.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS link_token TEXT UNIQUE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS link_token_expires_at TIMESTAMPTZ;

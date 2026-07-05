@@ -30,14 +30,12 @@
   <section class="panel">
     <div class="panel-head"><h2>1. Telegram</h2></div>
     <p class="sub">
-      Open the Whisper bot and send it your login details to link this chat to your account:
+      Tap the button below — it generates a one-time link tied to your account and opens
+      Telegram automatically. No email or password ever appears in the link, and it expires
+      in 10 minutes or as soon as it's used.
     </p>
-    <p style="margin: 16px 0;">
-      <code>/link your@email.com yourpassword</code>
-    </p>
-    <a id="telegramLink" href="#" target="_blank" class="btn-primary" style="display:inline-block;text-decoration:none;">
-      Open @WhisperAlertsBot on Telegram →
-    </a>
+    <button id="generateLinkBtn" class="btn-primary">Open Telegram →</button>
+    <p id="linkStatus" class="sub" style="margin-top:12px;"></p>
     <p class="sub" style="margin-top:16px;">
       Once linked, alerts arrive here automatically, and you can also manage alerts
       directly from the chat: <code>/setalert</code>, <code>/myalerts</code>, <code>/delete</code>.
@@ -63,11 +61,37 @@
 </main>
 
 <script>
-  // Fill these in once you have them:
-  //  - your bot's @username from BotFather
-  //  - the direct download URL for the built APK (e.g. a GitHub Releases asset link)
-  document.getElementById('telegramLink').href = 'https://t.me/WhisperAlertsBot';
-  document.getElementById('androidLink').href = '#'; // TODO: replace once the APK is built
+  const token = localStorage.getItem('whisper_token');
+  if (!token) {
+    window.location.href = 'index.html';
+  }
+
+  document.getElementById('generateLinkBtn').addEventListener('click', async () => {
+    const statusEl = document.getElementById('linkStatus');
+    statusEl.textContent = 'Generating your one-time link…';
+
+    try {
+      const res = await fetch('/telegram-link', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Something went wrong');
+      if (!data.telegram_deep_link) {
+        statusEl.textContent = 'Server has no bot username configured yet - ask the admin to set TELEGRAM_BOT_USERNAME.';
+        return;
+      }
+
+      statusEl.textContent = 'Opening Telegram… if it doesn\'t open automatically, tap the button again.';
+      window.open(data.telegram_deep_link, '_blank');
+    } catch (err) {
+      statusEl.textContent = 'Error: ' + err.message;
+    }
+  });
+
+  // Android download link - replace once the APK exists (e.g. a GitHub Releases URL)
+  document.getElementById('androidLink').href = '#';
 </script>
 
 </body>

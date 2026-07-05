@@ -14,6 +14,7 @@ const rulesRoutes = require('./routes/rules');
 const deviceRoutes = require('./routes/devices');
 const mt5IngestRoutes = require('./routes/mt5Ingest');
 const adminDiscoverRoutes = require('./routes/adminDiscover');
+const telegramLinkRoutes = require('./routes/telegramLink');
 
 const app = express();
 app.use(cors());
@@ -29,6 +30,7 @@ app.use('/rules', rulesRoutes);
 app.use('/devices', deviceRoutes);
 app.use('/ticks/mt5', mt5IngestRoutes);
 app.use('/admin', adminDiscoverRoutes);
+app.use('/telegram-link', telegramLinkRoutes);
 
 // Only needed if TELEGRAM_USE_WEBHOOK=true
 app.post('/telegram/webhook', (req, res, next) => {

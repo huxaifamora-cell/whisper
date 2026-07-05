@@ -8,7 +8,6 @@
 //   /delete <rule_id>                             - remove a rule
 
 const TelegramBot = require('node-telegram-bot-api');
-const bcrypt = require('bcryptjs');
 const db = require('../db');
 const { refreshSubscriptions } = require('./derivClient');
 const { isValidSymbol, labelForSymbol } = require('../constants/symbols');
@@ -29,27 +28,32 @@ function init() {
     bot.setWebHook(`${process.env.TELEGRAM_WEBHOOK_URL}`);
   }
 
-  bot.onText(/\/start/, (msg) => {
-    bot.sendMessage(
-      msg.chat.id,
-      "Welcome to Whisper 👂\n\nLink your account with the same email and password you use on the dashboard:\n/link your@email.com yourpassword\n\n(Your message is deleted from this chat automatically isn't guaranteed on Telegram, so consider changing your password after linking if you're on a shared device.)"
-    );
-  });
+  bot.onText(/\/start(?:\s+(\S+))?/, async (msg, match) => {
+    const token = match[1];
 
-  bot.onText(/\/link (\S+) (.+)/, async (msg, match) => {
-    const [, email, password] = match;
-    const { rows } = await db.query('SELECT id, email, password_hash FROM users WHERE email = $1', [
-      email.toLowerCase(),
-    ]);
-
-    if (!rows.length || !(await bcrypt.compare(password, rows[0].password_hash))) {
-      return bot.sendMessage(msg.chat.id, '❌ Email or password not recognized.');
+    if (!token) {
+      return bot.sendMessage(
+        msg.chat.id,
+        "Welcome to Whisper 👂\n\nTo link this chat to your account, go to the Whisper dashboard's Connect page (while logged in) and tap \"Open Telegram\" - it generates a one-time link just for you."
+      );
     }
 
-    await db.query('UPDATE users SET telegram_chat_id = $1 WHERE id = $2', [
-      String(msg.chat.id),
-      rows[0].id,
-    ]);
+    const { rows } = await db.query(
+      `SELECT id, email FROM users WHERE link_token = $1 AND link_token_expires_at > now()`,
+      [token]
+    );
+
+    if (!rows.length) {
+      return bot.sendMessage(
+        msg.chat.id,
+        '❌ That link has expired or was already used. Go back to the dashboard\'s Connect page and generate a fresh one.'
+      );
+    }
+
+    await db.query(
+      `UPDATE users SET telegram_chat_id = $1, link_token = NULL, link_token_expires_at = NULL WHERE id = $2`,
+      [String(msg.chat.id), rows[0].id]
+    );
     bot.sendMessage(msg.chat.id, `✅ Linked to ${rows[0].email}. You'll receive alerts here.`);
   });
 
