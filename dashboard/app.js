@@ -55,8 +55,6 @@ function showApp() {
   $('appView').classList.remove('hidden');
   $('accountBox').classList.remove('hidden');
   $('pairingCodeLabel').textContent = currentUser.email;
-  $('pairingCode').textContent = currentUser.pairing_code;
-  $('pairingInline').textContent = currentUser.pairing_code;
   loadRules();
   loadHistory();
 }
@@ -155,6 +153,7 @@ async function loadRules() {
       <td>${r.target_price}</td>
       <td>${r.direction}</td>
       <td class="status-${r.status}">${r.status}</td>
+      <td>${new Date(r.created_at).toLocaleString()}</td>
       <td><button class="link-btn" data-id="${r.id}">Delete</button></td>
     </tr>`
     )

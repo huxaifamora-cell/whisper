@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Whisper — Connect Telegram &amp; Android</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="assets/logo.jpg" alt="Whisper" class="brand-mark" />
+    <span class="brand-name">WHISPER</span>
+  </div>
+  <a href="index.html" class="btn-ghost" style="text-decoration:none;">← Back to dashboard</a>
+</header>
+
+<main>
+
+  <section class="panel">
+    <h2>Everything links with the same email</h2>
+    <p class="sub">
+      Whisper doesn't use separate codes for each device — Telegram and the Android app
+      both connect using the exact same email and password you use to sign in here.
+      Nothing to write down, nothing to lose.
+    </p>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>1. Telegram</h2></div>
+    <p class="sub">
+      Open the Whisper bot and send it your login details to link this chat to your account:
+    </p>
+    <p style="margin: 16px 0;">
+      <code>/link your@email.com yourpassword</code>
+    </p>
+    <a id="telegramLink" href="#" target="_blank" class="btn-primary" style="display:inline-block;text-decoration:none;">
+      Open @WhisperAlertsBot on Telegram →
+    </a>
+    <p class="sub" style="margin-top:16px;">
+      Once linked, alerts arrive here automatically, and you can also manage alerts
+      directly from the chat: <code>/setalert</code>, <code>/myalerts</code>, <code>/delete</code>.
+    </p>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>2. Android app</h2></div>
+    <p class="sub">
+      Install the app, then just log in with the same email and password — no code needed.
+      It runs in the background and plays a sound the moment your target price hits, even
+      if you're busy with something else.
+    </p>
+    <a id="androidLink" href="#" class="btn-primary" style="display:inline-block;text-decoration:none;">
+      Download Whisper for Android (.apk)
+    </a>
+    <p class="sub" style="margin-top:16px;">
+      Your phone may warn you about installing from outside the Play Store the first time —
+      that's expected for a direct APK install; open Settings → allow installs from this source, then try again.
+    </p>
+  </section>
+
+</main>
+
+<script>
+  // Fill these in once you have them:
+  //  - your bot's @username from BotFather
+  //  - the direct download URL for the built APK (e.g. a GitHub Releases asset link)
+  document.getElementById('telegramLink').href = 'https://t.me/WhisperAlertsBot';
+  document.getElementById('androidLink').href = '#'; // TODO: replace once the APK is built
+</script>
+
+</body>
+</html>

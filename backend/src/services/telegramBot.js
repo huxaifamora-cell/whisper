@@ -8,6 +8,7 @@
 //   /delete <rule_id>                             - remove a rule
 
 const TelegramBot = require('node-telegram-bot-api');
+const bcrypt = require('bcryptjs');
 const db = require('../db');
 const { refreshSubscriptions } = require('./derivClient');
 const { isValidSymbol, labelForSymbol } = require('../constants/symbols');
@@ -31,14 +32,19 @@ function init() {
   bot.onText(/\/start/, (msg) => {
     bot.sendMessage(
       msg.chat.id,
-      "Welcome to Whisper 👂\n\nLink your account first:\n/link YOUR_PAIRING_CODE\n\n(Find your pairing code on the Whisper dashboard, under Account.)"
+      "Welcome to Whisper 👂\n\nLink your account with the same email and password you use on the dashboard:\n/link your@email.com yourpassword\n\n(Your message is deleted from this chat automatically isn't guaranteed on Telegram, so consider changing your password after linking if you're on a shared device.)"
     );
   });
 
-  bot.onText(/\/link (.+)/, async (msg, match) => {
-    const code = match[1].trim().toUpperCase();
-    const { rows } = await db.query('SELECT id, email FROM users WHERE pairing_code = $1', [code]);
-    if (!rows.length) return bot.sendMessage(msg.chat.id, "❌ Invalid pairing code.");
+  bot.onText(/\/link (\S+) (.+)/, async (msg, match) => {
+    const [, email, password] = match;
+    const { rows } = await db.query('SELECT id, email, password_hash FROM users WHERE email = $1', [
+      email.toLowerCase(),
+    ]);
+
+    if (!rows.length || !(await bcrypt.compare(password, rows[0].password_hash))) {
+      return bot.sendMessage(msg.chat.id, '❌ Email or password not recognized.');
+    }
 
     await db.query('UPDATE users SET telegram_chat_id = $1 WHERE id = $2', [
       String(msg.chat.id),
