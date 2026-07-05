@@ -1,15 +1,17 @@
 //+------------------------------------------------------------------+
 //|                                              WhisperBridge.mq5   |
-//|  ONE EA instance watches ALL your MT5-only volatility symbols    |
-//|  and pushes their prices to the Whisper backend, so alerts work  |
-//|  even for symbols Deriv's WS API doesn't stream directly.        |
+//|  ONE EA instance watches EVERY volatility symbol and pushes      |
+//|  their prices to the Whisper backend - so all your alerts run    |
+//|  off one consistent MT5 feed, regardless of whether Deriv's WS   |
+//|  API also happens to stream that symbol.                         |
 //|                                                                    |
 //|  SETUP (all one-time steps):                                     |
 //|  1. Attach this EA to ANY chart in MT5 (it doesn't matter which  |
 //|     - it monitors the symbol list below regardless of which      |
 //|     chart it's sitting on).                                      |
-//|  2. Edit the SymbolMap input if needed (defaults already cover   |
-//|     Volatility 150 / 250, standard and 1s).                      |
+//|  2. Edit the SymbolMap input if your broker names any symbol     |
+//|     differently (defaults already cover all 17 volatility        |
+//|     symbols - standard, 1s, and the MT5-only 150/250 variants).  |
 //|  3. Set ServerUrl to your Render backend + /ticks/mt5             |
 //|  4. Set ApiSecret to match MT5_BRIDGE_SECRET in Render.           |
 //|  5. Tools -> Options -> Expert Advisors -> tick "Allow WebRequest |
@@ -28,8 +30,24 @@
 // If your broker names these symbols slightly differently (check MT5's
 // Market Watch -> right-click -> Symbols to see exact names), just edit the
 // left side of each pair here - the right side must match a key in
-// backend/src/constants/symbols.js.
+// backend/src/constants/symbols.js. This covers every volatility symbol,
+// not just the ones missing from Deriv's WS API - one EA, one feed, no need
+// to think about which source covers which symbol.
 input string SymbolMap =
+   "Volatility 10 Index:R_10,"
+   "Volatility 25 Index:R_25,"
+   "Volatility 50 Index:R_50,"
+   "Volatility 75 Index:R_75,"
+   "Volatility 100 Index:R_100,"
+   "Volatility 5 (1s) Index:1HZ5V,"
+   "Volatility 10 (1s) Index:1HZ10V,"
+   "Volatility 15 (1s) Index:1HZ15V,"
+   "Volatility 25 (1s) Index:1HZ25V,"
+   "Volatility 30 (1s) Index:1HZ30V,"
+   "Volatility 50 (1s) Index:1HZ50V,"
+   "Volatility 75 (1s) Index:1HZ75V,"
+   "Volatility 90 (1s) Index:1HZ90V,"
+   "Volatility 100 (1s) Index:1HZ100V,"
    "Volatility 150 Index:MT5_VOL150,"
    "Volatility 150 (1s) Index:MT5_VOL150_1S,"
    "Volatility 250 Index:MT5_VOL250,"

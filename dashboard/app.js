@@ -10,6 +10,7 @@ const SYMBOL_LABELS = {
   R_50: 'Volatility 50 Index',
   R_75: 'Volatility 75 Index',
   R_100: 'Volatility 100 Index',
+  '1HZ5V': 'Volatility 5 (1s) Index',
   '1HZ10V': 'Volatility 10 (1s) Index',
   '1HZ15V': 'Volatility 15 (1s) Index',
   '1HZ25V': 'Volatility 25 (1s) Index',

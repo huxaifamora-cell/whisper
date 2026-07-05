@@ -1,0 +1,26 @@
+# --- Secrets ---
+.env
+backend/.env
+android/app/google-services.json
+
+# --- Node ---
+node_modules/
+npm-debug.log*
+backend/dist/
+
+# --- Android / Gradle ---
+android/.gradle/
+android/local.properties
+android/*.iml
+android/.idea/
+android/app/build/
+android/build/
+android/captures/
+android/*.apk
+android/*.aab
+android/app/*.jks
+android/app/*.keystore
+
+# --- OS ---
+.DS_Store
+Thumbs.db
