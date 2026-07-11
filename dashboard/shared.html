@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Whisper — Shared Alerts</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="assets/logo.jpg" alt="Whisper" class="brand-mark" />
+    <span class="brand-name">WHISPER</span>
+  </div>
+  <nav class="nav-links">
+    <a href="index.html" class="nav-link">Dashboard</a>
+    <a href="history.html" class="nav-link">History</a>
+    <a href="shared.html" class="nav-link active">Shared Alerts</a>
+    <a href="connect.html" class="nav-link">Connect</a>
+  </nav>
+  <div class="account-box">
+    <button id="logoutBtn" class="btn-ghost">Sign out</button>
+  </div>
+</header>
+
+<main>
+
+  <div class="panel">
+    <h2>Receive someone else's alerts</h2>
+    <p class="sub">
+      Enter their email to request access. They'll need to approve it from their own
+      dashboard before you start receiving anything — entering an email alone never
+      shares data automatically.
+    </p>
+    <form id="requestForm" class="rule-form" style="grid-template-columns:1fr auto;">
+      <input type="email" name="owner_email" placeholder="Their email address" required />
+      <button type="submit" class="btn-primary">Request</button>
+    </form>
+    <p id="requestStatus" class="sub" style="margin-top:12px;"></p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h2>People who want to receive my alerts</h2></div>
+    <div class="table-scroll">
+      <table class="rule-table">
+        <thead><tr><th>Email</th><th>Status</th><th>Requested</th><th></th></tr></thead>
+        <tbody id="incomingBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h2>Alerts I'm receiving from others</h2></div>
+    <div class="table-scroll">
+      <table class="rule-table">
+        <thead><tr><th>Owner email</th><th>Status</th><th>Requested</th><th></th></tr></thead>
+        <tbody id="outgoingBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script src="common.js"></script>
+<script>
+  if (requireAuthOrRedirect()) {
+    document.getElementById('logoutBtn').addEventListener('click', whisperLogout);
+
+    document.getElementById('requestForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const statusEl = document.getElementById('requestStatus');
+      const fd = new FormData(e.target);
+      statusEl.textContent = 'Sending request…';
+      try {
+        await api('/subscriptions', {
+          method: 'POST',
+          body: JSON.stringify({ owner_email: fd.get('owner_email') }),
+        });
+        statusEl.textContent = '✅ Request sent. They need to approve it from their dashboard.';
+        statusEl.style.color = 'var(--success)';
+        e.target.reset();
+        loadOutgoing();
+      } catch (err) {
+        statusEl.textContent = 'Error: ' + err.message;
+        statusEl.style.color = 'var(--danger)';
+      }
+    });
+
+    async function loadIncoming() {
+      const rows = await api('/subscriptions/incoming');
+      document.getElementById('incomingBody').innerHTML = rows.map((r) => `
+        <tr>
+          <td>${r.subscriber_email}</td>
+          <td class="status-${r.status === 'approved' ? 'active' : r.status === 'pending' ? 'triggered' : 'disabled'}">${r.status}</td>
+          <td>${new Date(r.created_at).toLocaleString()}</td>
+          <td>
+            ${r.status === 'pending' ? `<button class="link-btn approve-btn" data-id="${r.id}" style="color:var(--success)">Approve</button>` : ''}
+            ${r.status !== 'revoked' ? `<button class="link-btn revoke-btn" data-id="${r.id}">Revoke</button>` : ''}
+          </td>
+        </tr>`).join('');
+
+      document.getElementById('incomingBody').querySelectorAll('.approve-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          await api(`/subscriptions/${btn.dataset.id}`, { method: 'PATCH', body: JSON.stringify({ status: 'approved' }) });
+          loadIncoming();
+        });
+      });
+      document.getElementById('incomingBody').querySelectorAll('.revoke-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          await api(`/subscriptions/${btn.dataset.id}`, { method: 'PATCH', body: JSON.stringify({ status: 'revoked' }) });
+          loadIncoming();
+        });
+      });
+    }
+
+    async function loadOutgoing() {
+      const rows = await api('/subscriptions/outgoing');
+      document.getElementById('outgoingBody').innerHTML = rows.map((r) => `
+        <tr>
+          <td>${r.owner_email}</td>
+          <td class="status-${r.status === 'approved' ? 'active' : r.status === 'pending' ? 'triggered' : 'disabled'}">${r.status}</td>
+          <td>${new Date(r.created_at).toLocaleString()}</td>
+          <td>${r.status !== 'revoked' ? `<button class="link-btn cancel-btn" data-id="${r.id}">Cancel</button>` : ''}</td>
+        </tr>`).join('');
+
+      document.getElementById('outgoingBody').querySelectorAll('.cancel-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          await api(`/subscriptions/${btn.dataset.id}`, { method: 'PATCH', body: JSON.stringify({ status: 'revoked' }) });
+          loadOutgoing();
+        });
+      });
+    }
+
+    loadIncoming();
+    loadOutgoing();
+  }
+</script>
+</body>
+</html>

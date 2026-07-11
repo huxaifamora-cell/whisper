@@ -16,9 +16,9 @@ router.get('/', async (req, res) => {
   res.json(result.rows);
 });
 
-// POST /rules  { symbol, timeframe, target_price, direction, sound }
+// POST /rules  { symbol, timeframe, target_price, direction, sound, description }
 router.post('/', async (req, res) => {
-  const { symbol, timeframe, target_price, direction, sound } = req.body;
+  const { symbol, timeframe, target_price, direction, sound, description } = req.body;
   if (!symbol || !timeframe || target_price == null || !['buy', 'sell'].includes(direction)) {
     return res.status(400).json({ error: 'symbol, timeframe, target_price, direction (buy|sell) are required' });
   }
@@ -27,9 +27,9 @@ router.post('/', async (req, res) => {
   }
 
   const result = await db.query(
-    `INSERT INTO rules (user_id, symbol, timeframe, target_price, direction, sound)
-     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-    [req.userId, symbol.toUpperCase(), timeframe, target_price, direction, sound || 'default']
+    `INSERT INTO rules (user_id, symbol, timeframe, target_price, direction, sound, description)
+     VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+    [req.userId, symbol.toUpperCase(), timeframe, target_price, direction, sound || 'default', description || null]
   );
 
   await refreshSubscriptions(); // make sure the Deriv WS client is subscribed to this symbol

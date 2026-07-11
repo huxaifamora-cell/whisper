@@ -20,6 +20,8 @@ body {
   color: var(--text);
   font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
   min-height: 100vh;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 .hidden { display: none !important; }
@@ -29,7 +31,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 32px;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 20px;
+  padding-top: calc(16px + env(safe-area-inset-top));
   border-bottom: 1px solid var(--panel-border);
 }
 .brand { display: flex; align-items: center; gap: 12px; }
@@ -42,16 +47,53 @@ body {
 }
 .account-box { display: flex; align-items: center; gap: 16px; color: var(--text-dim); font-size: 0.85rem; }
 
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  order: 3;
+  width: 100%;
+}
+.nav-link {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.82rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+.nav-link.active { color: var(--text); border-color: var(--purple); }
+.nav-link:hover { color: var(--text); }
+
+@media (min-width: 700px) {
+  .nav-links { order: 2; width: auto; }
+}
+
 /* ---------- Layout ---------- */
-main { max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; display: flex; flex-direction: column; gap: 24px; }
+main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (min-width: 600px) {
+  main { padding: 40px 24px 80px; gap: 24px; }
+}
 
 .panel {
   background: linear-gradient(180deg, var(--panel) 0%, #0c0b13 100%);
   border: 1px solid var(--panel-border);
   border-radius: 16px;
-  padding: 28px;
+  padding: 18px;
 }
-.panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+@media (min-width: 600px) {
+  .panel { padding: 28px; }
+}
+.panel-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .panel h2 { margin: 0; font-size: 1.05rem; font-weight: 600; }
 
 /* ---------- Auth ---------- */
@@ -76,6 +118,21 @@ input, select {
   font-family: inherit;
 }
 input:focus, select:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-glow); }
+
+textarea {
+  background: #0c0b13;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  resize: vertical;
+}
+textarea:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-glow); }
+textarea::placeholder { color: var(--text-dim); }
+
+.full-width { grid-column: 1 / -1; }
 
 .btn-primary {
   background: linear-gradient(135deg, var(--purple) 0%, #6d3ee0 100%);
@@ -123,19 +180,31 @@ code { color: var(--purple-bright); }
 /* ---------- Rule form ---------- */
 .rule-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .rule-form select { cursor: pointer; }
-.rule-form button { grid-column: 1 / -1; }
 
 /* ---------- Tables ---------- */
-.rule-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -18px;
+  padding: 0 18px;
+}
+@media (min-width: 600px) {
+  .table-scroll { margin: 0; padding: 0; }
+}
+.rule-table { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 0.88rem; }
+@media (min-width: 700px) {
+  .rule-table { min-width: 0; }
+}
 .rule-table th {
   text-align: left; color: var(--text-dim); font-weight: 500;
   padding: 10px 8px; border-bottom: 1px solid var(--panel-border); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 .rule-table td { padding: 12px 8px; border-bottom: 1px solid #1a1826; }
 .status-active { color: var(--success); }
 .status-triggered { color: var(--purple-bright); }
 .status-disabled { color: var(--text-dim); }
-.link-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.8rem; }
+.link-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.8rem; white-space: nowrap; }
 
 @media (max-width: 600px) {
   .rule-form { grid-template-columns: 1fr; }

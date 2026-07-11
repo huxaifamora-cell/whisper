@@ -1,0 +1,20 @@
+{
+  "_comment": "THIS IS A PLACEHOLDER. Replace this entire file with the real google-services.json downloaded from your Firebase project (Project settings -> General -> Your apps -> Android app), then rename it to exactly 'google-services.json' in this same folder (android/app/). It must be from the SAME Firebase project whose service-account JSON you put in Render's FIREBASE_SERVICE_ACCOUNT_JSON, so pushes actually reach this app.",
+  "project_info": {
+    "project_number": "000000000000",
+    "project_id": "whisper-placeholder",
+    "storage_bucket": "whisper-placeholder.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+        "android_client_info": { "package_name": "com.whisper.app" }
+      },
+      "oauth_client": [],
+      "api_key": [{ "current_key": "REPLACE_ME" }],
+      "services": { "appinvite_service": { "other_platform_oauth_client": [] } }
+    }
+  ],
+  "configuration_version": "1"
+}

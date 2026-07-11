@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Whisper</string>
+    <string name="default_notification_channel_id">whisper_alerts_channel</string>
+
+    <!-- Change this to your deployed Render backend URL, must end with a slash -->
+    <string name="api_base_url">https://whisper-backend-mnwo.onrender.com/</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Whisper" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/purple</item>
+        <item name="colorPrimaryDark">@color/background</item>
+        <item name="colorAccent">@color/purple_bright</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:statusBarColor">@color/background</item>
+    </style>
+
+    <!-- Used only by AlertActivity: shows over the lock screen and turns the
+         screen on, so it needs its own theme without the usual window dim. -->
+    <style name="Theme.Whisper.Alert" parent="Theme.Whisper">
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+</resources>

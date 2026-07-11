@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Whisper — Price Alerts</title>
 <link rel="stylesheet" href="style.css" />
 </head>
@@ -13,8 +13,13 @@
     <img src="assets/logo.jpg" alt="Whisper" class="brand-mark" />
     <span class="brand-name">WHISPER</span>
   </div>
+  <nav id="navLinks" class="nav-links hidden">
+    <a href="index.html" class="nav-link active">Dashboard</a>
+    <a href="history.html" class="nav-link">History</a>
+    <a href="shared.html" class="nav-link">Shared Alerts</a>
+    <a href="connect.html" class="nav-link">Connect</a>
+  </nav>
   <div id="accountBox" class="account-box hidden">
-    <span id="pairingCodeLabel"></span>
     <button id="logoutBtn" class="btn-ghost">Sign out</button>
   </div>
 </header>
@@ -49,15 +54,9 @@
   <!-- APP VIEW -->
   <section id="appView" class="hidden">
 
-    <div class="panel pairing-panel">
-      <h2>Link Telegram &amp; the Android app</h2>
-      <p class="sub">Connect your other alert channels using this same email address.</p>
-      <a href="connect.html" class="btn-primary" style="display:inline-block;text-decoration:none;">Go to Connect page →</a>
-    </div>
-
     <div class="panel">
       <div class="panel-head">
-        <h2>New alert</h2>
+        <h2>Create new alert</h2>
       </div>
       <form id="ruleForm" class="rule-form">
         <select name="symbol" required>
@@ -122,35 +121,32 @@
           <option value="urgent">Urgent sound</option>
           <option value="chime">Chime</option>
         </select>
-        <button type="submit" class="btn-primary">Create alert</button>
+        <textarea name="description" placeholder="Description (optional) — e.g. why you're setting this, what to check when it fires" rows="2" class="full-width"></textarea>
+        <button type="submit" class="btn-primary full-width">Create alert</button>
       </form>
+      <p id="createStatus" class="sub" style="margin-top:12px;"></p>
     </div>
 
     <div class="panel">
       <div class="panel-head">
-        <h2>Your alerts</h2>
+        <h2>Upcoming alerts</h2>
         <button id="refreshBtn" class="btn-ghost">Refresh</button>
       </div>
-      <table class="rule-table">
-        <thead>
-          <tr><th>Symbol</th><th>Timeframe</th><th>Target</th><th>Direction</th><th>Status</th><th>Created</th><th></th></tr>
-        </thead>
-        <tbody id="rulesBody"></tbody>
-      </table>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head"><h2>Recent alert history</h2></div>
-      <table class="rule-table">
-        <thead><tr><th>Symbol</th><th>Price</th><th>Direction</th><th>Sent via</th><th>When</th></tr></thead>
-        <tbody id="historyBody"></tbody>
-      </table>
+      <div class="table-scroll">
+        <table class="rule-table">
+          <thead>
+            <tr><th>Symbol</th><th>Timeframe</th><th>Target</th><th>Direction</th><th>Note</th><th>Status</th><th>Created</th><th></th></tr>
+          </thead>
+          <tbody id="rulesBody"></tbody>
+        </table>
+      </div>
     </div>
 
   </section>
 
 </main>
 
+<script src="common.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

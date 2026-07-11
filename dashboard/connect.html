@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Whisper — Connect Telegram &amp; Android</title>
 <link rel="stylesheet" href="style.css" />
 </head>
@@ -13,7 +13,15 @@
     <img src="assets/logo.jpg" alt="Whisper" class="brand-mark" />
     <span class="brand-name">WHISPER</span>
   </div>
-  <a href="index.html" class="btn-ghost" style="text-decoration:none;">← Back to dashboard</a>
+  <nav class="nav-links">
+    <a href="index.html" class="nav-link">Dashboard</a>
+    <a href="history.html" class="nav-link">History</a>
+    <a href="shared.html" class="nav-link">Shared Alerts</a>
+    <a href="connect.html" class="nav-link active">Connect</a>
+  </nav>
+  <div class="account-box">
+    <button id="logoutBtn" class="btn-ghost">Sign out</button>
+  </div>
 </header>
 
 <main>
@@ -60,38 +68,33 @@
 
 </main>
 
+<script src="common.js"></script>
 <script>
-  const token = localStorage.getItem('whisper_token');
-  if (!token) {
-    window.location.href = 'index.html';
-  }
+  if (requireAuthOrRedirect()) {
+    document.getElementById('logoutBtn').addEventListener('click', whisperLogout);
 
-  document.getElementById('generateLinkBtn').addEventListener('click', async () => {
-    const statusEl = document.getElementById('linkStatus');
-    statusEl.textContent = 'Generating your one-time link…';
+    document.getElementById('generateLinkBtn').addEventListener('click', async () => {
+      const statusEl = document.getElementById('linkStatus');
+      statusEl.textContent = 'Generating your one-time link…';
 
-    try {
-      const res = await fetch('/telegram-link', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
+      try {
+        const data = await api('/telegram-link', { method: 'POST' });
 
-      if (!res.ok) throw new Error(data.error || 'Something went wrong');
-      if (!data.telegram_deep_link) {
-        statusEl.textContent = 'Server has no bot username configured yet - ask the admin to set TELEGRAM_BOT_USERNAME.';
-        return;
+        if (!data.telegram_deep_link) {
+          statusEl.textContent = 'Server has no bot username configured yet - ask the admin to set TELEGRAM_BOT_USERNAME.';
+          return;
+        }
+
+        statusEl.textContent = 'Opening Telegram… if it doesn\'t open automatically, tap the button again.';
+        window.open(data.telegram_deep_link, '_blank');
+      } catch (err) {
+        statusEl.textContent = 'Error: ' + err.message;
       }
+    });
 
-      statusEl.textContent = 'Opening Telegram… if it doesn\'t open automatically, tap the button again.';
-      window.open(data.telegram_deep_link, '_blank');
-    } catch (err) {
-      statusEl.textContent = 'Error: ' + err.message;
-    }
-  });
-
-  // Android download link - replace once the APK exists (e.g. a GitHub Releases URL)
-  document.getElementById('androidLink').href = '#';
+    // Android download link - replace once the APK exists (e.g. a GitHub Releases URL)
+    document.getElementById('androidLink').href = '#';
+  }
 </script>
 
 </body>

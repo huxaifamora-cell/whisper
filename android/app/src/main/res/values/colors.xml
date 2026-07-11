@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#07070B</color>
+    <color name="panel">#100F18</color>
+    <color name="panel_border">#211F30</color>
+    <color name="purple">#8B5CF6</color>
+    <color name="purple_bright">#A78BFA</color>
+    <color name="text_primary">#F3F2F8</color>
+    <color name="text_dim">#8B899C</color>
+    <color name="danger">#F26A6A</color>
+    <color name="success">#52E3A4</color>
+    <color name="white">#FFFFFF</color>
+</resources>
