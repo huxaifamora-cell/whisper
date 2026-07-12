@@ -18,6 +18,7 @@ class RulesAdapter(
     class RuleViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val symbolText: TextView = view.findViewById(R.id.symbolText)
         val detailsText: TextView = view.findViewById(R.id.detailsText)
+        val descriptionText: TextView = view.findViewById(R.id.descriptionText)
         val statusText: TextView = view.findViewById(R.id.statusText)
         val deleteText: TextView = view.findViewById(R.id.deleteText)
     }
@@ -31,6 +32,14 @@ class RulesAdapter(
         val rule = rules[position]
         holder.symbolText.text = SymbolCatalog.labelFor(rule.symbol)
         holder.detailsText.text = "${rule.timeframe} → target ${rule.target_price} (${rule.direction})"
+
+        if (!rule.description.isNullOrBlank()) {
+            holder.descriptionText.text = "\"${rule.description}\""
+            holder.descriptionText.visibility = View.VISIBLE
+        } else {
+            holder.descriptionText.visibility = View.GONE
+        }
+
         holder.statusText.text = rule.status
 
         val color = when (rule.status) {

@@ -35,6 +35,14 @@
             android:name=".ui.NewAlertActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.HistoryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.SharedActivity"
+            android:exported="false" />
+
         <!-- Full-screen, alarm-style alert. Shows over lock screen, wakes the
              device, and can launch even while the app is backgrounded/killed. -->
         <activity

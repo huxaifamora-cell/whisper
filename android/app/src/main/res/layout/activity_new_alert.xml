@@ -76,6 +76,40 @@
             android:layout_height="wrap_content"
             android:background="@drawable/input_background"
             android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sound"
+            android:textColor="@color/text_dim"
+            android:textSize="13sp" />
+        <Spinner
+            android:id="@+id/soundSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/input_background"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description (optional)"
+            android:textColor="@color/text_dim"
+            android:textSize="13sp" />
+        <EditText
+            android:id="@+id/descriptionInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Why are you setting this alert?"
+            android:inputType="textMultiLine"
+            android:minLines="2"
+            android:gravity="top|start"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_dim"
+            android:background="@drawable/input_background"
+            android:padding="12dp"
             android:layout_marginBottom="24dp" />
 
         <Button

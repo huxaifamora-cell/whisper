@@ -27,7 +27,9 @@ class NewAlertActivity : AppCompatActivity() {
         val symbolSpinner = findViewById<Spinner>(R.id.symbolSpinner)
         val timeframeSpinner = findViewById<Spinner>(R.id.timeframeSpinner)
         val directionSpinner = findViewById<Spinner>(R.id.directionSpinner)
+        val soundSpinner = findViewById<Spinner>(R.id.soundSpinner)
         val targetPriceInput = findViewById<EditText>(R.id.targetPriceInput)
+        val descriptionInput = findViewById<EditText>(R.id.descriptionInput)
         val statusText = findViewById<TextView>(R.id.statusText)
         val createButton = findViewById<Button>(R.id.createButton)
 
@@ -43,12 +45,18 @@ class NewAlertActivity : AppCompatActivity() {
             this, android.R.layout.simple_spinner_dropdown_item,
             listOf("buy", "sell")
         )
+        soundSpinner.adapter = ArrayAdapter(
+            this, android.R.layout.simple_spinner_dropdown_item,
+            listOf("default", "urgent", "chime")
+        )
 
         createButton.setOnClickListener {
             val symbolIndex = symbolSpinner.selectedItemPosition
             val symbolCode = SymbolCatalog.symbols[symbolIndex].second
             val timeframe = timeframeSpinner.selectedItem as String
             val direction = directionSpinner.selectedItem as String
+            val sound = soundSpinner.selectedItem as String
+            val description = descriptionInput.text.toString().trim().ifBlank { null }
             val priceText = targetPriceInput.text.toString()
             val price = priceText.toDoubleOrNull()
 
@@ -61,7 +69,7 @@ class NewAlertActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     val response = ApiClient.get(this@NewAlertActivity, prefs)
-                        .createRule(NewRuleRequest(symbolCode, timeframe, price, direction))
+                        .createRule(NewRuleRequest(symbolCode, timeframe, price, direction, sound, description))
 
                     if (response.isSuccessful) {
                         finish()

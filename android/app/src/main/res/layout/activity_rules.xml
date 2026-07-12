@@ -35,6 +35,37 @@
                 android:padding="8dp" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="12dp">
+
+            <TextView
+                android:id="@+id/historyNavText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="History"
+                android:gravity="center"
+                android:textColor="@color/text_dim"
+                android:padding="8dp"
+                android:background="@drawable/input_background"
+                android:layout_marginEnd="6dp" />
+
+            <TextView
+                android:id="@+id/sharedNavText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Shared Alerts"
+                android:gravity="center"
+                android:textColor="@color/text_dim"
+                android:padding="8dp"
+                android:background="@drawable/input_background" />
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rulesRecyclerView"
             android:layout_width="match_parent"

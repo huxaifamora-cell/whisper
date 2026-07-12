@@ -47,6 +47,13 @@ class RulesActivity : AppCompatActivity() {
             .setOnClickListener {
                 startActivity(Intent(this, NewAlertActivity::class.java))
             }
+
+        findViewById<android.widget.TextView>(R.id.historyNavText).setOnClickListener {
+            startActivity(Intent(this, HistoryActivity::class.java))
+        }
+        findViewById<android.widget.TextView>(R.id.sharedNavText).setOnClickListener {
+            startActivity(Intent(this, SharedActivity::class.java))
+        }
     }
 
     override fun onResume() {

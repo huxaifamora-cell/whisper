@@ -26,8 +26,23 @@ interface WhisperApi {
     @DELETE("rules/{id}")
     suspend fun deleteRule(@Path("id") id: Int): Response<Unit>
 
+    @GET("rules/history/log")
+    suspend fun getHistory(): Response<List<HistoryItem>>
+
     @POST("devices")
     suspend fun registerDevice(@Body body: DeviceRegisterRequest): Response<Unit>
+
+    @POST("subscriptions")
+    suspend fun requestSubscription(@Body body: SubscriptionRequest): Response<Subscription>
+
+    @GET("subscriptions/incoming")
+    suspend fun getIncomingSubscriptions(): Response<List<Subscription>>
+
+    @GET("subscriptions/outgoing")
+    suspend fun getOutgoingSubscriptions(): Response<List<Subscription>>
+
+    @PATCH("subscriptions/{id}")
+    suspend fun updateSubscription(@Path("id") id: Int, @Body body: SubscriptionStatusUpdate): Response<Subscription>
 }
 
 object ApiClient {

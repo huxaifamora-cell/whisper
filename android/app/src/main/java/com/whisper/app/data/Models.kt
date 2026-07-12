@@ -21,6 +21,7 @@ data class Rule(
     val target_price: String,
     val direction: String,
     val sound: String,
+    val description: String? = null,
     val status: String,
     val created_at: String
 )
@@ -30,8 +31,31 @@ data class NewRuleRequest(
     val timeframe: String,
     val target_price: Double,
     val direction: String,
-    val sound: String = "default"
+    val sound: String = "default",
+    val description: String? = null
 )
+
+data class HistoryItem(
+    val id: Int,
+    val symbol: String,
+    val price: String,
+    val direction: String,
+    val dispatched_telegram: Boolean,
+    val dispatched_fcm: Boolean,
+    val created_at: String
+)
+
+data class SubscriptionRequest(val owner_email: String)
+
+data class Subscription(
+    val id: Int,
+    val status: String,
+    val created_at: String,
+    val subscriber_email: String? = null,
+    val owner_email: String? = null
+)
+
+data class SubscriptionStatusUpdate(val status: String)
 
 data class DeviceRegisterRequest(val fcm_token: String)
 
