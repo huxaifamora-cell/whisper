@@ -19,12 +19,12 @@ class HistoryActivity : AppCompatActivity() {
         setContentView(R.layout.activity_history)
         prefs = Prefs(this)
 
-        findViewById<android.widget.TextView>(R.id.backText).setOnClickListener { finish() }
-
         val recyclerView = findViewById<RecyclerView>(R.id.historyRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         val adapter = HistoryAdapter(emptyList())
         recyclerView.adapter = adapter
+
+        BottomNavHelper.setup(this, findViewById(R.id.bottomNav), WhisperTab.HISTORY)
 
         lifecycleScope.launch {
             try {

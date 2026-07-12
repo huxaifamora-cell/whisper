@@ -26,10 +26,10 @@ class SharedActivity : AppCompatActivity() {
         setContentView(R.layout.activity_shared)
         prefs = Prefs(this)
 
-        findViewById<TextView>(R.id.backText).setOnClickListener { finish() }
-
         val emailInput = findViewById<EditText>(R.id.ownerEmailInput)
         val statusText = findViewById<TextView>(R.id.requestStatusText)
+
+        BottomNavHelper.setup(this, findViewById(R.id.bottomNav), WhisperTab.SHARED)
 
         findViewById<Button>(R.id.requestButton).setOnClickListener {
             val email = emailInput.text.toString().trim()

@@ -48,12 +48,7 @@ class RulesActivity : AppCompatActivity() {
                 startActivity(Intent(this, NewAlertActivity::class.java))
             }
 
-        findViewById<android.widget.TextView>(R.id.historyNavText).setOnClickListener {
-            startActivity(Intent(this, HistoryActivity::class.java))
-        }
-        findViewById<android.widget.TextView>(R.id.sharedNavText).setOnClickListener {
-            startActivity(Intent(this, SharedActivity::class.java))
-        }
+        BottomNavHelper.setup(this, findViewById(R.id.bottomNav), WhisperTab.ALERTS)
     }
 
     override fun onResume() {
