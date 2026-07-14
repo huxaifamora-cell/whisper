@@ -86,7 +86,18 @@ object SymbolCatalog {
         "Volatility 90 Index (MT5 bridge)" to "MT5_VOL90",
         "Volatility 5 (1s) Index (MT5 bridge)" to "MT5_VOL5_1S",
         "Volatility 150 (1s) Index (MT5 bridge)" to "MT5_VOL150_1S",
-        "Volatility 250 (1s) Index (MT5 bridge)" to "MT5_VOL250_1S"
+        "Volatility 250 (1s) Index (MT5 bridge)" to "MT5_VOL250_1S",
+        "XAUUSD" to "frxXAUUSD",
+        "Bitcoin/USD (BTCUSD)" to "cryBTCUSD",
+        "GBP/USD" to "frxGBPUSD",
+        "AUD/USD" to "frxAUDUSD",
+        "EUR/USD" to "frxEURUSD",
+        "GBP/JPY" to "frxGBPJPY",
+        "USD/CAD" to "frxUSDCAD",
+        "USD/JPY" to "frxUSDJPY",
+        "EUR/AUD" to "frxEURAUD",
+        "AUD/CHF" to "frxAUDCHF",
+        "USD/CHF" to "frxUSDCHF"
     )
 
     fun labelFor(code: String): String =

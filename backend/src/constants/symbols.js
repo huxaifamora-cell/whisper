@@ -33,6 +33,23 @@ const SYMBOL_LABELS = {
   MT5_VOL5_1S: 'Volatility 5 (1s) Index',
   MT5_VOL150_1S: 'Volatility 150 (1s) Index',
   MT5_VOL250_1S: 'Volatility 250 (1s) Index',
+
+  // --- Forex / commodities / crypto (confirmed via /admin/discover-symbols) ---
+  // NOTE: CADJPY was searched for and does not exist on Deriv's WS API at
+  // all (not under any code) - omitted rather than guessed. If it turns out
+  // to exist on your MT5 broker, it can be added as an MT5-bridge symbol
+  // the same way Volatility 150/250 were.
+  frxXAUUSD: 'XAUUSD',
+  cryBTCUSD: 'Bitcoin/USD (BTCUSD)',
+  frxGBPUSD: 'GBP/USD',
+  frxAUDUSD: 'AUD/USD',
+  frxEURUSD: 'EUR/USD',
+  frxGBPJPY: 'GBP/JPY',
+  frxUSDCAD: 'USD/CAD',
+  frxUSDJPY: 'USD/JPY',
+  frxEURAUD: 'EUR/AUD',
+  frxAUDCHF: 'AUD/CHF',
+  frxUSDCHF: 'USD/CHF',
 };
 
 // Which symbols require the MT5 EA bridge rather than the Deriv WS client.

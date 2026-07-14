@@ -56,6 +56,17 @@ const SYMBOL_LABELS = {
   MT5_VOL5_1S: 'Volatility 5 (1s) Index (MT5 bridge)',
   MT5_VOL150_1S: 'Volatility 150 (1s) Index (MT5 bridge)',
   MT5_VOL250_1S: 'Volatility 250 (1s) Index (MT5 bridge)',
+  frxXAUUSD: 'XAUUSD',
+  cryBTCUSD: 'Bitcoin/USD (BTCUSD)',
+  frxGBPUSD: 'GBP/USD',
+  frxAUDUSD: 'AUD/USD',
+  frxEURUSD: 'EUR/USD',
+  frxGBPJPY: 'GBP/JPY',
+  frxUSDCAD: 'USD/CAD',
+  frxUSDJPY: 'USD/JPY',
+  frxEURAUD: 'EUR/AUD',
+  frxAUDCHF: 'AUD/CHF',
+  frxUSDCHF: 'USD/CHF',
 };
 function labelForSymbol(symbol) {
   return SYMBOL_LABELS[String(symbol).toUpperCase()] || symbol;
