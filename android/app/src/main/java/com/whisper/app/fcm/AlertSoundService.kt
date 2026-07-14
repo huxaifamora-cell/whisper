@@ -55,9 +55,10 @@ class AlertSoundService : Service() {
         val direction = intent?.getStringExtra("direction") ?: ""
         val price = intent?.getStringExtra("price") ?: ""
         val targetPrice = intent?.getStringExtra("target_price") ?: ""
+        val sharedBy = intent?.getStringExtra("shared_by")
 
         createNotificationChannel()
-        startForeground(NOTIFICATION_ID, buildNotification(symbolLabel, timeframe, direction, price, targetPrice))
+        startForeground(NOTIFICATION_ID, buildNotification(symbolLabel, timeframe, direction, price, targetPrice, sharedBy))
         playAlertTone()
         vibrate()
 
@@ -68,7 +69,7 @@ class AlertSoundService : Service() {
     }
 
     private fun buildNotification(
-        symbolLabel: String, timeframe: String, direction: String, price: String, targetPrice: String
+        symbolLabel: String, timeframe: String, direction: String, price: String, targetPrice: String, sharedBy: String?
     ): android.app.Notification {
         val fullScreenIntent = Intent(this, AlertActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -77,16 +78,24 @@ class AlertSoundService : Service() {
             putExtra("direction", direction)
             putExtra("price", price)
             putExtra("target_price", targetPrice)
+            putExtra("shared_by", sharedBy)
         }
         val fullScreenPendingIntent = PendingIntent.getActivity(
             this, 0, fullScreenIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val bodyText = if (!sharedBy.isNullOrBlank()) {
+            "Target $targetPrice reached — price now $price ($direction) — shared by $sharedBy"
+        } else {
+            "Target $targetPrice reached — price now $price ($direction)"
+        }
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("$symbolLabel ($timeframe)")
-            .setContentText("Target $targetPrice reached — price now $price ($direction)")
+            .setContentText(bodyText)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(bodyText))
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setFullScreenIntent(fullScreenPendingIntent, true)

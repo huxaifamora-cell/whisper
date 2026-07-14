@@ -33,10 +33,19 @@ class AlertActivity : AppCompatActivity() {
         val direction = intent.getStringExtra("direction") ?: ""
         val price = intent.getStringExtra("price") ?: ""
         val targetPrice = intent.getStringExtra("target_price") ?: ""
+        val sharedBy = intent.getStringExtra("shared_by")
 
         findViewById<android.widget.TextView>(R.id.alertTitle).text = "$symbol ($timeframe)"
         findViewById<android.widget.TextView>(R.id.alertDetails).text =
             "Target $targetPrice reached — now $price (${direction.uppercase()})"
+
+        val sharedByText = findViewById<android.widget.TextView>(R.id.sharedByText)
+        if (!sharedBy.isNullOrBlank()) {
+            sharedByText.text = "Shared by $sharedBy"
+            sharedByText.visibility = android.view.View.VISIBLE
+        } else {
+            sharedByText.visibility = android.view.View.GONE
+        }
 
         findViewById<android.widget.Button>(R.id.dismissButton).setOnClickListener {
             stopAlertSound()

@@ -42,6 +42,7 @@ async function dispatchAlert(rule, price) {
       price,
       sound: rule.sound,
       rule_id: rule.id,
+      shared_by: isOwner ? null : owner.email,
     });
     if (isOwner) dispatchedFcm = fcmResult.sent > 0;
   }

@@ -39,6 +39,7 @@ async function sendAlertToUser(userId, payload) {
       price: String(payload.price),
       sound: String(payload.sound || 'default'),
       rule_id: String(payload.rule_id),
+      shared_by: String(payload.shared_by || ''),
     },
     android: { priority: 'high' },
   };

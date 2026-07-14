@@ -61,10 +61,19 @@ router.delete('/:id', async (req, res) => {
   res.json({ deleted: true });
 });
 
-// GET /rules/history - recent triggered alerts
+// GET /rules/history - recent triggered alerts, including shared ones from
+// anyone whose alerts you're an approved subscriber of.
 router.get('/history/log', async (req, res) => {
   const result = await db.query(
-    `SELECT * FROM alert_history WHERE user_id = $1 ORDER BY created_at DESC LIMIT 100`,
+    `SELECT ah.*, u.email AS owner_email, (ah.user_id != $1) AS is_shared
+     FROM alert_history ah
+     JOIN users u ON u.id = ah.user_id
+     WHERE ah.user_id = $1
+        OR ah.user_id IN (
+             SELECT owner_user_id FROM subscriptions
+             WHERE subscriber_user_id = $1 AND status = 'approved'
+           )
+     ORDER BY ah.created_at DESC LIMIT 100`,
     [req.userId]
   );
   res.json(result.rows);

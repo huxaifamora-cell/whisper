@@ -16,6 +16,7 @@ class HistoryAdapter(private var items: List<HistoryItem>) :
         val symbolText: TextView = view.findViewById(R.id.symbolText)
         val detailsText: TextView = view.findViewById(R.id.detailsText)
         val whenText: TextView = view.findViewById(R.id.whenText)
+        val sharedByText: TextView = view.findViewById(R.id.sharedByText)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
@@ -34,6 +35,13 @@ class HistoryAdapter(private var items: List<HistoryItem>) :
 
         holder.detailsText.text = "Price ${item.price} (${item.direction}) — sent via $sentVia"
         holder.whenText.text = item.created_at
+
+        if (item.is_shared && !item.owner_email.isNullOrBlank()) {
+            holder.sharedByText.text = "shared by ${item.owner_email}"
+            holder.sharedByText.visibility = View.VISIBLE
+        } else {
+            holder.sharedByText.visibility = View.GONE
+        }
     }
 
     override fun getItemCount(): Int = items.size

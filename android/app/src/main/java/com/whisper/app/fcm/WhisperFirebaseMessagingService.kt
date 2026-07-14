@@ -47,6 +47,7 @@ class WhisperFirebaseMessagingService : FirebaseMessagingService() {
             putExtra("price", data["price"])
             putExtra("sound", data["sound"])
             putExtra("rule_id", data["rule_id"])
+            putExtra("shared_by", data["shared_by"])
         }
 
         androidx.core.content.ContextCompat.startForegroundService(applicationContext, intent)

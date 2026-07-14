@@ -42,7 +42,9 @@ data class HistoryItem(
     val direction: String,
     val dispatched_telegram: Boolean,
     val dispatched_fcm: Boolean,
-    val created_at: String
+    val created_at: String,
+    val owner_email: String? = null,
+    val is_shared: Boolean = false
 )
 
 data class SubscriptionRequest(val owner_email: String)

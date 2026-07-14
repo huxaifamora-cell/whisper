@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
     req.userId,
   ]);
 
-  const botUsername = process.env.TELEGRAM_BOT_USERNAME;
+  const botUsername = process.env.TELEGRAM_BOT_USERNAME?.trim().replace(/^@/, '');
   const deepLink = botUsername ? `https://t.me/${botUsername}?start=${token}` : null;
 
   res.json({ token, expires_at: expiresAt, telegram_deep_link: deepLink });

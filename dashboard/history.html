@@ -49,7 +49,7 @@
       document.getElementById('historyBody').innerHTML = history
         .map((h) => `
           <tr>
-            <td>${labelForSymbol(h.symbol)}</td>
+            <td>${labelForSymbol(h.symbol)}${h.is_shared ? `<br><span style="color:var(--purple-bright);font-size:0.75rem;">shared by ${h.owner_email}</span>` : ''}</td>
             <td>${h.price}</td>
             <td>${h.direction}</td>
             <td>${[h.dispatched_telegram ? 'Telegram' : null, h.dispatched_fcm ? 'App' : null].filter(Boolean).join(' + ') || '—'}</td>

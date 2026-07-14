@@ -16,6 +16,13 @@ router.get('/discover-symbols', async (req, res) => {
     return res.status(401).send('Missing or wrong ?secret= value.');
   }
 
+  // Default: volatility indices (original use case). Pass ?q=xau,btc,gbpusd
+  // etc. to search for anything else instead - comma-separated, matched
+  // case-insensitively against both the symbol code and display name.
+  const searchTerms = req.query.q
+    ? String(req.query.q).split(',').map((t) => t.trim().toLowerCase()).filter(Boolean)
+    : null;
+
   try {
     const results = await new Promise((resolve, reject) => {
       const ws = new WebSocket(
@@ -39,11 +46,17 @@ router.get('/discover-symbols', async (req, res) => {
         }
         if (msg.msg_type === 'active_symbols') {
           clearTimeout(timeout);
-          const volatility = msg.active_symbols
-            .filter((s) => /volatility/i.test(s.display_name))
+          const matched = msg.active_symbols
+            .filter((s) => {
+              if (searchTerms) {
+                const haystack = `${s.symbol} ${s.display_name}`.toLowerCase();
+                return searchTerms.some((term) => haystack.includes(term));
+              }
+              return /volatility/i.test(s.display_name);
+            })
             .sort((a, b) => a.display_name.localeCompare(b.display_name));
           ws.close();
-          resolve(volatility);
+          resolve(matched);
         }
       });
 
@@ -54,14 +67,14 @@ router.get('/discover-symbols', async (req, res) => {
     });
 
     const rows = results
-      .map((s) => `<tr><td style="padding:4px 12px">${s.symbol}</td><td style="padding:4px 12px">${s.display_name}</td></tr>`)
+      .map((s) => `<tr><td style="padding:4px 12px">${s.symbol}</td><td style="padding:4px 12px">${s.display_name}</td><td style="padding:4px 12px">${s.market}/${s.submarket}</td></tr>`)
       .join('');
 
     res.send(`
       <html><body style="font-family:sans-serif;background:#0a0a0f;color:#eee;padding:24px">
-        <h2>Volatility symbols Deriv's WS API actually streams</h2>
-        <p>Anything from your target list NOT in this table isn't available over this API and needs the MT5 bridge instead.</p>
-        <table style="border-collapse:collapse"><tr><th style="text-align:left;padding:4px 12px">Code</th><th style="text-align:left;padding:4px 12px">Display name</th></tr>${rows}</table>
+        <h2>${searchTerms ? `Symbols matching: ${searchTerms.join(', ')}` : "Volatility symbols Deriv's WS API actually streams"}</h2>
+        <p>${results.length} match(es) found. Anything you searched for that's NOT in this table isn't available over this WS API and needs a different approach (e.g. the MT5 bridge).</p>
+        <table style="border-collapse:collapse"><tr><th style="text-align:left;padding:4px 12px">Code</th><th style="text-align:left;padding:4px 12px">Display name</th><th style="text-align:left;padding:4px 12px">Market</th></tr>${rows}</table>
       </body></html>
     `);
   } catch (err) {
