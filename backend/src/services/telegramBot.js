@@ -1,8 +1,10 @@
-// Telegram bot: lets a user link their Whisper account and manage rules
-// straight from chat, and is one of the two channels alerts are pushed to.
+// Telegram bot: lets a user open the Whisper Mini App (a full web UI inside
+// Telegram) to sign in, manage alerts, and see history - and also supports
+// a few quick chat commands for people who prefer typing.
 //
 // Commands:
-//   /link <PAIRING_CODE>                         - link this chat to a Whisper account
+//   /app                                          - open the Whisper Mini App
+//   /start <token>                                - one-time link from the dashboard's Connect page
 //   /setalert SYMBOL TIMEFRAME PRICE buy|sell     - create a rule
 //   /myalerts                                     - list active rules
 //   /delete <rule_id>                             - remove a rule
@@ -28,14 +30,25 @@ function init() {
     bot.setWebHook(`${process.env.TELEGRAM_WEBHOOK_URL}`);
   }
 
+  bot.onText(/\/app/, (msg) => {
+    sendOpenAppButton(msg.chat.id);
+  });
+
+  // Persistent "Open App" button next to the message input, so people don't
+  // need to remember /app - shows every time they open this chat.
+  const webAppUrl = getWebAppUrl();
+  if (webAppUrl) {
+    bot.setChatMenuButton({
+      menu_button: { type: 'web_app', text: 'Open Whisper', web_app: { url: webAppUrl } },
+    }).catch((err) => console.warn('[telegram] could not set menu button:', err.message));
+  }
+
   bot.onText(/\/start(?:\s+(\S+))?/, async (msg, match) => {
     const token = match[1];
 
     if (!token) {
-      return bot.sendMessage(
-        msg.chat.id,
-        "Welcome to Whisper 👂\n\nTo link this chat to your account, go to the Whisper dashboard's Connect page (while logged in) and tap \"Open Telegram\" - it generates a one-time link just for you."
-      );
+      sendOpenAppButton(msg.chat.id, "Welcome to Whisper 👂\n\nOpen the app below to sign in, manage alerts, and see your history - all without leaving Telegram.");
+      return;
     }
 
     const { rows } = await db.query(
@@ -59,7 +72,7 @@ function init() {
 
   bot.onText(/\/setalert (\S+) (\S+) ([\d.]+) (buy|sell)/i, async (msg, match) => {
     const user = await getUserByChatId(msg.chat.id);
-    if (!user) return bot.sendMessage(msg.chat.id, 'Link your account first with /link CODE');
+    if (!user) return bot.sendMessage(msg.chat.id, 'Link your account first - tap /app to open Whisper and sign in');
 
     const [, symbol, timeframe, price, direction] = match;
     if (!isValidSymbol(symbol)) {
@@ -82,7 +95,7 @@ function init() {
 
   bot.onText(/\/myalerts/, async (msg) => {
     const user = await getUserByChatId(msg.chat.id);
-    if (!user) return bot.sendMessage(msg.chat.id, 'Link your account first with /link CODE');
+    if (!user) return bot.sendMessage(msg.chat.id, 'Link your account first - tap /app to open Whisper and sign in');
 
     const { rows } = await db.query(
       `SELECT id, symbol, timeframe, target_price, direction, status FROM rules
@@ -99,7 +112,7 @@ function init() {
 
   bot.onText(/\/delete (\d+)/, async (msg, match) => {
     const user = await getUserByChatId(msg.chat.id);
-    if (!user) return bot.sendMessage(msg.chat.id, 'Link your account first with /link CODE');
+    if (!user) return bot.sendMessage(msg.chat.id, 'Link your account first - tap /app to open Whisper and sign in');
 
     const result = await db.query('DELETE FROM rules WHERE id = $1 AND user_id = $2 RETURNING id', [
       match[1],
@@ -114,6 +127,27 @@ function init() {
 async function getUserByChatId(chatId) {
   const { rows } = await db.query('SELECT id, email FROM users WHERE telegram_chat_id = $1', [String(chatId)]);
   return rows[0] || null;
+}
+
+function getWebAppUrl() {
+  const base = process.env.PUBLIC_BASE_URL;
+  return base ? `${base.replace(/\/$/, '')}/telegram-app.html` : null;
+}
+
+function sendOpenAppButton(chatId, text = 'Tap below to open Whisper.') {
+  const webAppUrl = getWebAppUrl();
+  if (!bot) return;
+
+  if (!webAppUrl) {
+    bot.sendMessage(chatId, text + '\n\n(Mini App URL not configured yet - set PUBLIC_BASE_URL.)');
+    return;
+  }
+
+  bot.sendMessage(chatId, text, {
+    reply_markup: {
+      inline_keyboard: [[{ text: '👂 Open Whisper', web_app: { url: webAppUrl } }]],
+    },
+  });
 }
 
 async function sendAlertToChat(chatId, text) {
