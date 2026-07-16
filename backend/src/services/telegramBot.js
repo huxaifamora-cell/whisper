@@ -12,7 +12,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const db = require('../db');
 const { refreshSubscriptions } = require('./derivClient');
-const { isValidSymbol, labelForSymbol } = require('../constants/symbols');
+const { normalizeSymbol, labelForSymbol } = require('../constants/symbols');
 
 let bot = null;
 
@@ -75,21 +75,22 @@ function init() {
     if (!user) return bot.sendMessage(msg.chat.id, 'Link your account first - tap /app to open Whisper and sign in');
 
     const [, symbol, timeframe, price, direction] = match;
-    if (!isValidSymbol(symbol)) {
+    const canonicalSymbol = normalizeSymbol(symbol);
+    if (!canonicalSymbol) {
       return bot.sendMessage(
         msg.chat.id,
-        `❌ "${symbol}" isn't a recognized symbol code. Use codes like R_75, R_100, 1HZ15V, 1HZ100V (check the dashboard for the full list).`
+        `❌ "${symbol}" isn't a recognized symbol code. Use codes like R_75, R_100, 1HZ15V, frxEURUSD (check the dashboard for the full list).`
       );
     }
     const result = await db.query(
       `INSERT INTO rules (user_id, symbol, timeframe, target_price, direction)
        VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-      [user.id, symbol.toUpperCase(), timeframe, price, direction.toLowerCase()]
+      [user.id, canonicalSymbol, timeframe, price, direction.toLowerCase()]
     );
     await refreshSubscriptions();
     bot.sendMessage(
       msg.chat.id,
-      `✅ Alert #${result.rows[0].id} set: ${labelForSymbol(symbol)} ${timeframe} target ${price} (${direction})`
+      `✅ Alert #${result.rows[0].id} set: ${labelForSymbol(canonicalSymbol)} ${timeframe} target ${price} (${direction})`
     );
   });
 

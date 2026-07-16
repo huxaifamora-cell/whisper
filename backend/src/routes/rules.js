@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
   const result = await db.query(
     `INSERT INTO rules (user_id, symbol, timeframe, target_price, direction, sound, description)
      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-    [req.userId, symbol.toUpperCase(), timeframe, target_price, direction, sound || 'default', description || null]
+    [req.userId, symbol, timeframe, target_price, direction, sound || 'default', description || null]
   );
 
   await refreshSubscriptions(); // make sure the Deriv WS client is subscribed to this symbol

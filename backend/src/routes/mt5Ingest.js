@@ -8,7 +8,7 @@
 
 const express = require('express');
 const { evaluateTick } = require('../services/rulesEngine');
-const { isValidSymbol } = require('../constants/symbols');
+const { normalizeSymbol } = require('../constants/symbols');
 
 const router = express.Router();
 
@@ -28,18 +28,18 @@ router.post('/', async (req, res) => {
   if (!symbol || price == null || isNaN(Number(price))) {
     return res.status(400).json({ error: 'symbol and numeric price are required' });
   }
-  if (!isValidSymbol(symbol)) {
+  const canonicalSymbol = normalizeSymbol(symbol);
+  if (!canonicalSymbol) {
     return res.status(400).json({ error: `Unknown symbol "${symbol}". Add it to constants/symbols.js first.` });
   }
 
-  const upperSymbol = symbol.toUpperCase();
   const now = Date.now();
-  if (!lastLoggedAt[upperSymbol] || now - lastLoggedAt[upperSymbol] > LOG_INTERVAL_MS) {
-    lastLoggedAt[upperSymbol] = now;
-    console.log(`[mt5-bridge] ${upperSymbol} @ ${price}`);
+  if (!lastLoggedAt[canonicalSymbol] || now - lastLoggedAt[canonicalSymbol] > LOG_INTERVAL_MS) {
+    lastLoggedAt[canonicalSymbol] = now;
+    console.log(`[mt5-bridge] ${canonicalSymbol} @ ${price}`);
   }
 
-  await evaluateTick(upperSymbol, Number(price));
+  await evaluateTick(canonicalSymbol, Number(price));
   res.json({ ok: true });
 });
 

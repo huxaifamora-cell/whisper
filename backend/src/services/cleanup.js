@@ -9,7 +9,7 @@ const { VALID_SYMBOLS } = require('../constants/symbols');
 // dashboard if they want.
 async function disableInvalidSymbolRules() {
   const { rows } = await db.query(`SELECT id, symbol FROM rules WHERE status = 'active'`);
-  const badRows = rows.filter((r) => !VALID_SYMBOLS.has(String(r.symbol).toUpperCase()));
+  const badRows = rows.filter((r) => !VALID_SYMBOLS.has(String(r.symbol)));
 
   if (!badRows.length) {
     console.log('[cleanup] no invalid-symbol rules found');

@@ -60,13 +60,39 @@ const MT5_BRIDGE_ONLY = new Set([
 
 const VALID_SYMBOLS = new Set(Object.keys(SYMBOL_LABELS));
 
+// Case-insensitive lookup: user-typed-lowercase -> canonical correctly-cased key.
+// Needed because some codes are genuinely mixed-case (frxUSDJPY, cryBTCUSD),
+// so a naive toUpperCase() comparison breaks them.
+const CANONICAL_BY_LOWERCASE = new Map(
+  Object.keys(SYMBOL_LABELS).map((key) => [key.toLowerCase(), key])
+);
+
+// Strict check: does this EXACT string match a known symbol code? Used
+// wherever the value came from our own dropdown/API (which always sends the
+// correct casing already), so no normalization should be needed.
 function isValidSymbol(symbol) {
-  return typeof symbol === 'string' && VALID_SYMBOLS.has(symbol.toUpperCase());
+  return typeof symbol === 'string' && VALID_SYMBOLS.has(symbol);
+}
+
+// Case-insensitive lookup that returns the canonical correctly-cased code,
+// or null if nothing matches. Used for free-text input (e.g. Telegram's
+// /setalert command) where a person might type frxusdjpy or FRXUSDJPY.
+function normalizeSymbol(symbol) {
+  if (typeof symbol !== 'string') return null;
+  if (VALID_SYMBOLS.has(symbol)) return symbol;
+  return CANONICAL_BY_LOWERCASE.get(symbol.toLowerCase()) || null;
 }
 
 function labelForSymbol(symbol) {
-  return SYMBOL_LABELS[String(symbol).toUpperCase()] || symbol;
+  return SYMBOL_LABELS[symbol] || SYMBOL_LABELS[normalizeSymbol(symbol)] || symbol;
 }
 
-module.exports = { VALID_SYMBOLS, SYMBOL_LABELS, MT5_BRIDGE_ONLY, isValidSymbol, labelForSymbol };
+module.exports = {
+  VALID_SYMBOLS,
+  SYMBOL_LABELS,
+  MT5_BRIDGE_ONLY,
+  isValidSymbol,
+  normalizeSymbol,
+  labelForSymbol,
+};
 
