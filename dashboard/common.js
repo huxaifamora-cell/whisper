@@ -69,5 +69,5 @@ const SYMBOL_LABELS = {
   frxUSDCHF: 'USD/CHF',
 };
 function labelForSymbol(symbol) {
-  return SYMBOL_LABELS[String(symbol).toUpperCase()] || symbol;
+  return SYMBOL_LABELS[symbol] || symbol;
 }
